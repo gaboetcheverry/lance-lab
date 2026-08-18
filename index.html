@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎬 LANCE Strategy Lab · CESIM Global Challenge</title>
+<style>
+:root{--oro:#e0b352;--neon:#3ddc84;--rojo:#ff5d5d;--fondo:#0d0a1e;--tar:#171233;--tar2:#1f1840;--borde:#332a5c;--texto:#f0edff}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:radial-gradient(1000px 480px at 75% -10%,#2a1b52 0%,var(--fondo) 60%);color:var(--texto);min-height:100vh;line-height:1.55}
+header{position:sticky;top:0;z-index:50;background:#0d0a1eee;border-bottom:2px solid var(--oro);padding:12px 18px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+header h1{font-size:1.15rem;color:var(--oro)}
+header .sub{font-size:.76rem;color:#a99fd0}
+.modos{display:flex;gap:6px;background:rgba(255,255,255,.08);padding:5px;border-radius:999px}
+.modos button{border:none;border-radius:999px;padding:7px 14px;cursor:pointer;font-weight:700;background:transparent;color:var(--texto)}
+.modos button.activo{background:var(--oro);color:#131313}
+nav{background:#0d0a1ee6;border-bottom:1px solid var(--borde);display:flex;overflow-x:auto;padding:8px 12px;gap:6px;position:sticky;top:0;z-index:40}
+nav button{border:1px solid var(--borde);background:transparent;border-radius:999px;padding:8px 14px;cursor:pointer;white-space:nowrap;font-weight:600;color:#a99fd0}
+nav button.activo{background:var(--oro);color:#131313;border-color:var(--oro)}
+main{max-width:1080px;margin:0 auto;padding:22px 16px 60px}
+section{display:none}
+section.visible{display:block;animation:ap .35s ease}
+@keyframes ap{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h2{color:var(--oro);margin-bottom:6px}
+h3{margin:12px 0 6px;color:#fff}
+.tar{background:var(--tar);border:1px solid var(--borde);border-radius:14px;padding:18px;margin:14px 0;box-shadow:0 6px 18px rgba(0,0,0,.35)}
+.grid{display:grid;gap:14px}.grid2{grid-template-columns:repeat(auto-fit,minmax(290px,1fr))}.grid3{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+.btn{border:none;background:var(--oro);color:#131313;padding:10px 18px;border-radius:10px;cursor:pointer;font-weight:800;font-size:.92rem}
+.btn:hover{filter:brightness(1.1)}
+.btn.sec{background:transparent;color:var(--oro);border:1px solid var(--oro)}
+.btn.mini{padding:6px 12px;font-size:.8rem}
+.badge{display:inline-block;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:999px;background:#2a2153;color:var(--oro)}
+.t-verde,.t-ambar,.t-rojo{display:inline-block;font-size:.75rem;font-weight:700;padding:3px 10px;border-radius:999px;color:#fff}
+.t-verde{background:#1e8e5a}.t-ambar{background:#c77700}.t-rojo{background:#c0392b}
+body.mode-exp .solo-ana{display:none}body.mode-ana .solo-exp{display:none}
+.aviso{border-left:5px solid #c77700;background:#3a2c14;padding:10px 14px;border-radius:8px;margin:10px 0}
+.peligro{border-left:5px solid #c0392b;background:#3a1712;padding:10px 14px;border-radius:8px;margin:10px 0}
+.exito{border-left:5px solid #1e8e5a;background:#12301f;padding:10px 14px;border-radius:8px;margin:10px 0}
+.critico{border-left:5px solid var(--oro);background:#2a2410;padding:10px 14px;border-radius:8px;margin:10px 0}
+.leccion{border-left:6px solid var(--neon);background:#12301f;border-radius:10px;padding:12px 16px;margin:12px 0}
+details{margin:8px 0;border:1px solid var(--borde);border-radius:10px;padding:8px 12px;background:var(--tar2)}
+summary{cursor:pointer;font-weight:700;color:var(--oro)}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:.9rem}
+th,td{border:1px solid var(--borde);padding:8px;text-align:left;vertical-align:top}
+th{background:#2a2153;color:var(--oro)}
+input[type=range]{width:100%}
+input[type=text],textarea,select{width:100%;border:1px solid var(--borde);border-radius:10px;padding:10px;font:inherit;background:#0d0a1e;color:var(--texto)}
+.progreso{background:#2a2153;border-radius:999px;height:12px;overflow:hidden;margin:8px 0}
+.progreso>div{background:linear-gradient(90deg,var(--oro),#f5d78e);height:100%;width:0%;transition:width .4s}
+.opcion{display:block;width:100%;text-align:left;margin:6px 0;padding:12px 14px;border:1px solid var(--borde);border-radius:10px;background:var(--tar2);cursor:pointer;font:inherit;color:var(--texto)}
+.opcion.correcta{background:#12301f;border-color:#1e8e5a}
+.opcion.incorrecta{background:#3a1712;border-color:#c0392b}
+.num{font-size:1.45rem;font-weight:800;color:var(--oro)}
+.etiq{font-size:.74rem;color:#a99fd0;font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+.check-item{display:flex;gap:10px;align-items:flex-start;padding:8px 4px;border-bottom:1px dashed var(--borde)}
+.check-item input{margin-top:4px;transform:scale(1.2)}
+footer{background:#0d0a1e;border-top:2px solid var(--oro);text-align:center;padding:18px;font-size:.8rem;color:#a99fd0}
+</style>
+</head>
+<body class="mode-exp">
+
+<header>
+  <div><h1>🎬 LANCE Strategy Lab</h1><div class="sub">Negocios de la Comunicación y el Entretenimiento · CESIM Global Challenge</div></div>
+  <div class="modos"><button id="btnExp">🟢 Creativo</button><button id="btnAna">🔵 Financiero</button></div>
+</header>
+
+<nav id="nav">
+  <button class="activo" data-tab="inicio">🏠 Inicio</button>
+  <button data-tab="csuite">🎭 C-Suite</button>
+  <button data-tab="aprender">📚 Aprender</button>
+  <button data-tab="simulador">🧪 Lanzamiento</button>
+  <button data-tab="kolb">🔄 Kolb</button>
+  <button data-tab="redteam">🚨 Red Team</button>
+  <button data-tab="kpis">📊 KPIs</button>
+  <button data-tab="glosario">📖 Glosario</button>
+  <button data-tab="quiz">🏆 Reto</button>
+  <button data-tab="check">✅ Checklist</button>
+</nav>
+
+<main>
+
+<section id="inicio" class="visible">
+  <div class="tar">
+    <h2>🎬 Bienvenido/a al holding de entretenimiento</h2>
+    <p>No veas CESIM como una telecom ajena: tu <strong>Tech 1 / Tech 2</strong> son el <strong>dispositivo de streaming</strong> y la <strong>consola de nueva generación</strong> de tu ecosistema digital. EE.UU. y Europa son mercados sofisticados que pagan premium por innovación; Asia, tu planta de costo eficiente para tecnologías maduras.</p>
+    <p class="solo-exp">🟢 <strong>Modo Creativo:</strong> analogías de la industria del entretenimiento para conectar creatividad con negocio.</p>
+    <p class="solo-ana">🔵 <strong>Modo Financiero:</strong> TSR, DCF, WACC, elasticidades y rigor financiero para maximizar valuación.</p>
+    <div class="grid grid2" style="margin-top:12px">
+      <div class="tar" style="margin:0"><h3>🟢 Vengo de creatividad/medios</h3><p>Aprende cómo tu contenido y tu marca se convierten en flujo de caja.</p><button class="btn" id="btnM1">Entrar como Creativo</button></div>
+      <div class="tar" style="margin:0"><h3>🔵 Vengo de finanzas</h3><p>Conecta el rigor financiero con la estrategia de entretenimiento.</p><button class="btn" id="btnM2">Entrar como Financiero</button></div>
+    </div>
+  </div>
+  <div class="tar"><h3>📈 Tu progreso</h3><div class="progreso"><div id="barraProgreso"></div></div><p id="txtProgreso"></p></div>
+  <div class="tar"><h3>🏆 Reglas de oro LANCE</h3>
+    <ol style="padding-left:20px">
+      <li>La meta es el <strong>TSR</strong>: valor para el accionista = precio de acción (DCF) + dividendos.</li>
+      <li>Publicidad entre <strong>10–30% del margen de contribución</strong>; los lanzamientos premium exigen campañas vigorosas.</li>
+      <li>Operaciones: capacidad &gt;80%; si te saturas, el <strong>outsourcing</strong> salva ventas pero penaliza <strong>+35%</strong> el costo unitario.</li>
+      <li>Si la caja falla, se activa el <strong>crédito de emergencia (13–15%)</strong> que destruye tu TSR.</li>
+      <li>El <strong>DCF premia</strong> la inversión en crecimiento futuro (I+D y marketing): recortarlas hoy infla el EBIT… y colapsa tu acción mañana.</li>
+      <li>Gana la <strong>consistencia</strong>: el DCF pondera todas las rondas, no solo la última.</li>
+    </ol>
+  </div>
+</section>
+
+<section id="csuite">
+  <h2>🎭 Metodología de Roles Ejecutivos (C-Suite)</h2>
+  <p>Cada integrante asume una responsabilidad clara alineada a su perfil y materias. Nadie decide solo: el comité decide.</p>
+  <div class="grid grid3">
+    <div class="tar" style="margin:0"><h3>📣 CMO</h3><p><span class="badge">Mercadotecnia para el Entretenimiento</span> <span class="badge">Métricas de Audiencia</span></p>
+      <p>Analiza preferencias por región, fija precios (elasticidad), dimensiona la demanda y diseña la diferenciación premium.</p>
+      <details><summary>Checklist por ronda</summary><ul style="padding-left:18px"><li>Preferencias y elasticidad por mercado (EE.UU./Europa premium, Asia precio).</li><li>Precio coherente: nicho ($280) con características que lo respalden.</li><li>Publicidad 10–30% del margen; campaña de lanzamiento si hay nueva tech.</li><li>Demanda total estimada entregada al COO.</li></ul></details></div>
+    <div class="tar" style="margin:0"><h3>⚙️ COO</h3><p><span class="badge">Operaciones</span> <span class="badge">Administración de Proyectos</span></p>
+      <p>Capacidad &gt;80%, fletes y transferencias EE.UU.–Asia, y equilibrio stock-out vs inventario.</p>
+      <details><summary>Checklist por ronda</summary><ul style="padding-left:18px"><li>Producción vs demanda del CMO: ni stock-out ni inventario ocioso.</li><li>Capacidad empleada &gt;80%.</li><li>Tech nueva en EE.UU.; madura en Asia.</li><li>Si hay outsourcing: asumir +35% de costo unitario.</li></ul></details></div>
+    <div class="tar" style="margin:0"><h3>💰 CFO</h3><p><span class="badge">Finanzas Empresariales</span> <span class="badge">Costos y Presupuestos</span></p>
+      <p>Audita el consolidado, gestiona deuda/WACC, programa buybacks y blinda la tesorería contra el crédito de emergencia.</p>
+      <details><summary>Checklist por ronda</summary><ul style="padding-left:18px"><li>Tesorería proyectada: cubrir I+D + marketing sin crédito de emergencia.</li><li>Ratio de endeudamiento para optimizar WACC.</li><li>Buybacks solo con ganancias acumuladas y acción subvaluada.</li><li>Recordar: DCF premia inversión en crecimiento futuro.</li></ul></details></div>
+  </div>
+  <div class="critico">🎭 <strong>Dinámica sugerida:</strong> roten el rol de “CEO de la ronda” quien integra y confirma; el docente actúa como Consejo de Administración (Red Team).</div>
+</section>
+
+<section id="aprender"><h2>📚 Ruta de aprendizaje LANCE</h2><p>Mini-lecciones con doble lectura: creativa 🟢 y financiera 🔵.</p><div id="listaLecciones"></div></section>
+
+<section id="simulador">
+  <h2>🧪 Laboratorio de Lanzamiento: “StreamBox X” (Tech 2)</h2>
+  <p>Mueve las palancas del lanzamiento premium y observa el efecto dominó. (Modelo educativo simplificado; cifras en miles.)</p>
+  <div class="tar">
+    <div class="grid grid3">
+      <div><div class="etiq">Precio (USD): <span id="vP"></span></div><input type="range" id="sP" min="180" max="320" step="5" value="280"></div>
+      <div><div class="etiq">Publicidad por unidad: <span id="vA"></span></div><input type="range" id="sA" min="0" max="80" step="2" value="30"></div>
+      <div><div class="etiq">Producción (miles): <span id="vQ"></span></div><input type="range" id="sQ" min="0" max="700" step="20" value="400"></div>
+    </div>
+    <p style="margin-top:10px"><label><input type="radio" name="tech" id="rLic" checked> ⚡ Licencia externa (inmediata, pago único, multiplicador de demanda &gt;1.0)</label><br>
+    <label><input type="radio" name="tech" id="rRnd"> 🧪 I+D propio (más barato, retraso de 1 ronda)</label></p>
+    <p class="small" style="font-size:.8rem;color:#a99fd0">Capacidad propia: 500k · Costo unitario $140 · Outsourcing +35% · Fijos $8,000k.</p>
+  </div>
+  <div class="grid grid3" id="simRes"></div>
+  <div class="tar"><h3>🚨 Alertas del comité</h3><div id="simAl"></div></div>
+  <div class="tar critico"><h3>🧠 Preguntas del consejo</h3>
+    <ul style="padding-left:20px">
+      <li>¿El precio premium está respaldado por características y campaña, o es avaricia?</li>
+      <li>¿Mi producción cubre la demanda que el marketing promete?</li>
+      <li>¿Estoy pagando outsourcing evitable?</li>
+      <li>¿Mi caja aguanta sin crédito de emergencia?</li>
+    </ul>
+  </div>
+</section>
+
+<section id="kolb">
+  <h2>🔄 Bitácora del Ciclo de Kolb</h2>
+  <p>El aprendizaje profundo ocurre ronda a ronda con este ciclo. Regístralo (se guarda en este navegador).</p>
+  <div class="tar">
+    <div class="etiq">Ronda</div><input type="text" id="kRonda" placeholder="Ej. Ronda 3">
+    <div class="etiq" style="margin-top:8px">1️⃣ Experiencia concreta (¿qué decidimos?)</div><textarea id="k1" rows="2"></textarea>
+    <div class="etiq" style="margin-top:8px">2️⃣ Observación reflexiva (¿por qué pasó? ¿stock-out? ¿crédito de emergencia? ¿WACC?)</div><textarea id="k2" rows="2"></textarea>
+    <div class="etiq" style="margin-top:8px">3️⃣ Conceptualización abstracta (¿qué teoría explica? ¿volumen vs nicho premium?)</div><textarea id="k3" rows="2"></textarea>
+    <div class="etiq" style="margin-top:8px">4️⃣ Experimentación activa (¿qué cambiaremos planificado la próxima ronda?)</div><textarea id="k4" rows="2"></textarea>
+    <p style="margin-top:10px"><button class="btn" id="btnKolb">💾 Guardar ciclo</button> <button class="btn sec" id="btnKolbExp">⬇️ Exportar .txt</button> <button class="btn sec" id="btnKolbDel">🗑️ Borrar</button></p>
+  </div>
+  <div id="listaKolb"></div>
+</section>
+
+<section id="redteam">
+  <h2>🚨 Red Team: el Consejo te confronta</h2>
+  <p>Docente o “abogado del diablo”: saca una pregunta crítica y defiendan su estrategia.</p>
+  <div class="tar"><button class="btn" id="btnRT">🎲 Sacar pregunta crítica</button><div id="rtOut" class="critico" style="margin-top:10px"></div></div>
+  <div class="tar peligro"><strong>Confrontación clásica del Consejo:</strong> “Han inflado el EBIT a corto plazo, pero destruyeron el potencial de crecimiento: cero I+D y cero publicidad. Los inversores descontarán sus flujos futuros a una tasa mayor y su precio de acción colapsará. ¿Cómo planean competir tecnológicamente el próximo año?”</div>
+</section>
+
+<section id="kpis"><h2>📊 KPIs del holding</h2>
+  <p class="solo-exp">🟢 Lectura creativa; abre la versión financiera cuando quieras.</p>
+  <p class="solo-ana">🔵 Indicadores con fórmula y semáforo.</p>
+  <div class="grid grid2" id="kpiGrid"></div>
+</section>
+
+<section id="glosario"><h2>📖 Glosario LANCE-CESIM</h2>
+  <div class="tar"><input type="text" id="gBuscar" placeholder="🔍 Buscar término…" oninput="renderGlosario()"><div style="margin-top:8px"><select id="gCat" onchange="renderGlosario()"></select></div></div>
+  <div class="grid grid2" id="glosarioGrid"></div>
+</section>
+
+<section id="quiz"><h2>🏆 Reto del holding</h2><div class="tar" id="quizCaja"></div></section>
+
+<section id="check"><h2>✅ Checklist C-Suite antes de confirmar la ronda</h2><div class="progreso"><div id="barraCheck"></div></div><p id="txtCheck" style="font-size:.85rem;color:#a99fd0"></p><div class="tar" id="listaCheck"></div></section>
+
+</main>
+
+<footer>LANCE Strategy Lab · App educativa basada en: guía estratégica LANCE-CESIM · GC Analyzing Results Guide · GC Valuation Principles · Análisis Integral Cesim.<br>Herramienta de aprendizaje: no reemplaza el simulador oficial.</footer>
+
+<script>
+var $=function(s){return document.querySelector(s);};
+var guardar=function(k,v){localStorage.setItem(k,JSON.stringify(v));};
+var leer=function(k,d){try{var v=JSON.parse(localStorage.getItem(k));return v==null?d:v;}catch(e){return d;}};
+var modo=leer('lance_modo','exp');
+function setMode(m){modo=m;guardar('lance_modo',m);document.body.classList.toggle('mode-exp',m==='exp');document.body.classList.toggle('mode-ana',m==='ana');$('#btnExp').classList.toggle('activo',m==='exp');$('#btnAna').classList.toggle('activo',m==='ana');renderLecciones();renderKPIs();renderGlosario();}
+function showTab(id){document.querySelectorAll('main section').forEach(function(s){s.classList.remove('visible');});$('#'+id).classList.add('visible');document.querySelectorAll('#nav button').forEach(function(b){b.classList.toggle('activo',b.dataset.tab===id);});window.scrollTo({top:0,behavior:'smooth'});}
+document.querySelectorAll('#nav button').forEach(function(b){b.addEventListener('click',function(){showTab(b.dataset.tab);});});
+$('#btnExp').onclick=function(){setMode('exp');};$('#btnAna').onclick=function(){setMode('ana');};
+$('#btnM1').onclick=function(){setMode('exp');showTab('aprender');};
+$('#btnM2').onclick=function(){setMode('ana');showTab('aprender');};
+
+/* LECCIONES */
+var lecciones=[
+{id:'a',i:'🎬',t:'CESIM con lente de entretenimiento',s:'Tu empresa no vende “telecom”: lanza un <strong>ecosistema digital</strong> (consola/streaming). Tech 1 es tu línea madura; Tech 2, tu lanzamiento premium. EE.UU. y Europa valoran innovación; Asia produce barato lo maduro.',f:'Los dispositivos Tech 1..N modelan ciclos de vida de producto tecnológico: demanda por tecnología, curva de aprendizaje, y estrategias volumen vs nicho visibles en rotación y precios.',k:['Tech 2 = lanzamiento global de entretenimiento.','Mercados sofisticados pagan premium con valor respaldado.','Asia = eficiencia para tecnologías maduras.'],q:'¿Qué contenido o característica haría premium tu StreamBox X?'},
+{id:'b',i:'🏆',t:'La meta: TSR y valuación',s:'Gana quien crea más valor al accionista: <strong>precio de acción + dividendos</strong>. El precio lo fija el mercado mirando tu futuro (DCF), no solo tu última ronda.',f:'TSR = ([precio actual + dividendos]/precio inicial)^(1/rondas). EV = promedio ponderado DCF (dominante) + múltiplos (EV/SALES, EV/EBITDA, EV/EBIT, EV/NOPLAT); capitalización = EV − deuda + efectivo excedente.',k:['TSR combina ganancia de capital y dividendos.','DCF pondera desempeño histórico de varias rondas.','Inversión en I+D/marketing mejora la proyección de flujos.'],q:'¿Por qué recortar I+D para “verse bien” hoy destruye TSR mañana?'},
+{id:'c',i:'🎯',t:'Nicho premium vs volumen',s:'Dos caminos: <strong>diferenciación premium</strong> (precio alto, características, campaña vigorosa) o <strong>volumen</strong> (escala, aprendizaje, precio bajo). Ambas ganan bien ejecutadas.',f:'Estrategia de nicho: precios que cubren altos costos iniciales de producción; volumen: economías de escala y curva de aprendizaje. La comparación directa por EBIT es engañosa entre estrategias.',k:['Declara tu estrategia y sé coherente.','Premium sin valor respaldado = fuga de clientes.','Volumen sin escala = márgenes negativos.'],q:'¿Qué estrategia elegirá tu holding y a qué renunciará?'},
+{id:'d',i:'🔗',t:'Decisiones interconectadas (CMO-COO-CFO)',s:'Paso 1 I+D/licencia → Paso 2 marketing premium → Paso 3 operaciones que cubran la demanda → Paso 4 tesorería que aguante. Mueves una palanca y todas reaccionan.',f:'Licencia: pago único, disponible ya, multiplicador de demanda &gt;1.0. I+D propia: retraso de 1 período, gasto inmediato en P&G. Stock-out regala cuota; inventario inmoviliza capital de trabajo; outsourcing +35% costo unitario.',k:['Licencia = velocidad; I+D = capacidad futura.','Marketing promete; operaciones cumple; finanzas sostienen.','El crédito de emergencia (13–15%) castiga no planear caja.'],q:'Si el CMO promete demanda que el COO no puede producir, ¿quién pierde?'},
+{id:'e',i:'⚙️',t:'Operaciones: stock-out, inventario, outsourcing',s:'Produce de menos → <strong>ventas perdidas</strong> (le regalas cuota al rival). De más → <strong>inventario ocioso</strong>. Capacidad saturada → outsourcing caro (+35%).',f:'Capacidad empleada óptima ~80% desde costos variables. Fabricación contratada sin aprendizaje; máxima disponible depende del uso histórico. Europa se sirve desde EE.UU. o Asia según transporte+aranceles.',k:['Demanda estimada es el insumo del plan de producción.','Outsourcing = salvavidas, no estrategia.','Inventario = capital de trabajo financiado.'],q:'¿Qué cuesta más: stock-out o inventario en tu ronda actual?'},
+{id:'f',i:'💰',t:'Finanzas: WACC, caja y buybacks',s:'El CFO blinda la caja: sin crédito de emergencia. La deuda bien gestionada mejora el retorno; el mercado castiga la volatilidad.',f:'WACC incorpora riesgo país, crediticio y específico; flujos estables → menor WACC → mayor EV. Buybacks solo con ganancias acumuladas; emisión considerable diluye precio. Transfer pricing afecta solo vía impuestos.',k:['Tesorería proyectada antes de invertir.','Apalancamiento = retorno y riesgo.','Consistencia reduce el riesgo específico.'],q:'¿Tu EBITDA volátil subiría tu WACC? ¿Por qué?'},
+{id:'g',i:'🔄',t:'El ciclo de Kolb ronda a ronda',s:'1) Decides (experiencia). 2) Diagnosticas sin prisa (observación). 3) Conectas con teoría (conceptualización). 4) Aplicas planificado (experimentación).',f:'La observación reflexiva pregunta: ¿por qué stock-out? ¿por qué crédito de emergencia? ¿qué disparó el WACC? La conceptualización evalúa volumen vs nicho; la experimentación reacciona anticíclicamente (fletes R3, buybacks finales).',k:['No corras a la siguiente ronda: diagnostica.','Teoría y simulador se explican mutuamente.','Planifica la siguiente ronda, no improvises.'],q:'¿Qué aprenderás de tu última ronda antes de decidir la siguiente?'}
+];
+function renderLecciones(){var done=leer('lance_done',[]);$('#listaLecciones').innerHTML=lecciones.map(function(l){var ok=done.indexOf(l.id)>-1;var prim=modo==='exp'?l.s:l.f;var sec=modo==='exp'?l.f:l.s;return '<div class="tar"><h3>'+l.i+' '+l.t+' '+(ok?'<span class="t-verde">Completada ✔</span>':'')+'</h3><p>'+prim+'</p><details><summary>'+(modo==='exp'?'Ver versión financiera 🔵':'Ver versión creativa 🟢')+'</summary><p>'+sec+'</p></details><h3>💡 Ideas clave</h3><ul style="padding-left:20px">'+l.k.map(function(k){return '<li>'+k+'</li>';}).join('')+'</ul><div class="critico">🧠 <strong>Piensa:</strong> '+l.q+'</div><button class="btn mini" data-l="'+l.id+'">'+(ok?'Marcar pendiente':'✅ Completada')+'</button></div>';}).join('');
+document.querySelectorAll('[data-l]').forEach(function(b){b.onclick=function(){var d=leer('lance_done',[]);var id=b.dataset.l;d=d.indexOf(id)>-1?d.filter(function(x){return x!==id;}):d.concat(id);guardar('lance_done',d);renderLecciones();};});
+var n=leer('lance_done',[]).length;var p=Math.round(n/lecciones.length*100);$('#barraProgreso').style.width=p+'%';$('#txtProgreso').textContent='Has completado '+n+' de '+lecciones.length+' módulos ('+p+'%).';}
+
+/* SIMULADOR */
+function badge(n){return '<span class="t-'+n+'">'+(n==='verde'?'OK':n==='ambar'?'Atención':'Riesgo')+'</span>';}
+function calcSim(){
+ var price=+$('#sP').value,ad=+$('#sA').value,q=+$('#sQ').value,lic=$('#rLic').checked;
+ $('#vP').textContent='$'+price;$('#vA').textContent='$'+ad;$('#vQ').textContent=q+'k';
+ var cap=500,uc=140,fix=8000;
+ var techCost=lic?15000:10000,diff=lic?50:25;
+ var dem=Math.max(0,Math.min(700,320-(price-180)*0.9+ad*2.0+diff));
+ var sales=Math.min(dem,q),stock=Math.max(0,dem-q),inv=Math.max(0,q-dem);
+ var out=Math.max(0,q-cap),own=q-out;
+ var prodCost=own*uc+out*uc*1.35;
+ var ucAvg=q>0?prodCost/q:uc;
+ var rev=sales*price,adCost=ad*sales;
+ var ebitda=rev-prodCost-adCost-fix-techCost;
+ var mUnit=price-ucAvg-ad;
+ var recMin=Math.round((price-ucAvg)*0.1),recMax=Math.round((price-ucAvg)*0.3);
+ var nM=mUnit<=0?'rojo':mUnit<30?'ambar':'verde';
+ var nS=stock===0?'verde':stock<dem*0.1?'ambar':'rojo';
+ var nI=inv<=q*0.05?'verde':inv<=q*0.15?'ambar':'rojo';
+ var nO=out===0?'verde':'rojo';
+ var nE=ebitda>0?'verde':ebitda>-8000?'ambar':'rojo';
+ var nA=(ad>=recMin&&ad<=recMax)?'verde':'ambar';
+ $('#simRes').innerHTML=
+ '<div class="tar" style="margin:0"><div class="etiq">Demanda estimada</div><div class="num">'+Math.round(dem)+'k</div>'+badge(nS)+' <small>stock-out: '+Math.round(stock)+'k</small></div>'+
+ '<div class="tar" style="margin:0"><div class="etiq">Inventario</div><div class="num">'+Math.round(inv)+'k</div>'+badge(nI)+'</div>'+
+ '<div class="tar" style="margin:0"><div class="etiq">Outsourcing</div><div class="num">'+Math.round(out)+'k</div>'+badge(nO)+' <small>+35% costo</small></div>'+
+ '<div class="tar" style="margin:0"><div class="etiq">Margen unitario</div><div class="num">$'+Math.round(mUnit)+'</div>'+badge(nM)+'</div>'+
+ '<div class="tar" style="margin:0"><div class="etiq">EBITDA aprox.</div><div class="num">$'+Math.round(ebitda).toLocaleString('es')+'k</div>'+badge(nE)+'</div>'+
+ '<div class="tar" style="margin:0"><div class="etiq">Publicidad sugerida</div><div class="num">$'+recMin+'–$'+recMax+'</div>'+badge(nA)+' <small>usas $'+ad+'</small></div>';
+ var al=[];
+ if(price>280&&!lic)al.push(['aviso','Premium &gt;$280 sin licencia/características que lo respalden: el mercado sofisticado te abandonará.']);
+ if(stock>dem*0.1)al.push(['peligro','Stock-out severo: regalas cuota de mercado a los rivales.']);
+ if(inv>q*0.15)al.push(['peligro','Inventario ocioso: capital de trabajo inmovilizado en bodega.']);
+ if(out>0)al.push(['peligro','Capacidad saturada: outsourcing con penalización +35% erosiona tu margen bruto.']);
+ if(ad<recMin)al.push(['aviso','Publicidad por debajo de la regla 10–30% del margen: lanzamiento sin megáfono.']);
+ if(ad>recMax)al.push(['aviso','Publicidad sobre la regla: verifica que el volumen la justifique.']);
+ if(ebitda<0)al.push(['peligro','EBITDA negativo: si la caja no cubre, se activa el crédito de emergencia (13–15%) que destruye TSR.']);
+ if((ad*sales+techCost)>20000&&ebitda>-5000)al.push(['exito','📈 DCF: el mercado premia la inversión en crecimiento futuro; tu precio de acción lo agradecerá.']);
+ if((ad*sales+techCost)<8000&&ebitda>0)al.push(['aviso','⚠️ Recortaste I+D/marketing para inflar EBIT hoy: el Consejo (Red Team) te confrontará.']);
+ if(al.length===0)al.push(['exito','Lanzamiento coherente: premium respaldado, operación alineada y caja sana.']);
+ $('#simAl').innerHTML=al.map(function(x){return '<div class="'+x[0]+'">'+(x[0]==='exito'?'✅ ':x[0]==='peligro'?'⛔ ':'⚠️ ')+x[1]+'</div>';}).join('');
+}
+['sP','sA','sQ'].forEach(function(id){$('#'+id).addEventListener('input',calcSim);});
+$('#rLic').addEventListener('change',calcSim);$('#rRnd').addEventListener('change',calcSim);
+
+/* KOLB */
+$('#btnKolb').onclick=function(){var e={r:$('#kRonda').value||'—',a:$('#k1').value,b:$('#k2').value,c:$('#k3').value,d:$('#k4').value,f:new Date().toLocaleDateString('es')};var l=leer('lance_kolb',[]);l.unshift(e);guardar('lance_kolb',l);['kRonda','k1','k2','k3','k4'].forEach(function(id){$('#'+id).value='';});renderKolb();};
+function renderKolb(){var l=leer('lance_kolb',[]);$('#listaKolb').innerHTML=l.length?l.map(function(e){return '<div class="tar"><h3>🔄 '+e.r+' <span class="badge">'+e.f+'</span></h3><p><strong>1️⃣:</strong> '+e.a+'</p><p><strong>2️⃣:</strong> '+e.b+'</p><p><strong>3️⃣:</strong> '+e.c+'</p><p><strong>4️⃣:</strong> '+e.d+'</p></div>';}).join(''):'<div class="tar">Aún no hay ciclos registrados.</div>';}
+$('#btnKolbExp').onclick=function(){var l=leer('lance_kolb',[]);if(!l.length){alert('Nada que exportar.');return;}var t=l.map(function(e){return 'RONDA '+e.r+' ('+e.f+')\n1 Experiencia: '+e.a+'\n2 Observación: '+e.b+'\n3 Conceptualización: '+e.c+'\n4 Experimentación: '+e.d+'\n--------------\n';}).join('');var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'text/plain'}));a.download='kolb-lance.txt';a.click();};
+$('#btnKolbDel').onclick=function(){if(confirm('¿Borrar todos los ciclos?')){guardar('lance_kolb',[]);renderKolb();}};
+
+/* RED TEAM */
+var RT=['Han inflado el EBIT recortando I+D y publicidad: ¿qué pasará con su precio de acción en las rondas 5 y 8?','Su capacidad está al 60%: ¿quién paga esas fábricas medio vacías?','Bajaron precio sin escala: ¿diferenciación o carrera al fondo?','El outsourcing es su plan, no su salvavidas: ¿dónde quedó su curva de aprendizaje?','Tienen efectivo en Asia y deuda en EE.UU.: ¿quién gana esa diferencia?','Su TSR depende de un golpe de suerte en la última ronda: ¿eso es estrategia?','Prometieron demanda premium sin características: ¿qué dice su audiencia?','El crédito de emergencia apareció dos rondas seguidas: ¿dónde está el CFO?','Europa muestra “pérdidas”: ¿es real o es su precio de transferencia?','Compraron licencia cara tarde: ¿por qué no una estrategia de I+D de largo plazo?','Su cuota de mercado sube pero su margen cae: ¿crecimiento o sangría?','¿Qué riesgo específico elevaría su WACC según su volatilidad de EBITDA?'];
+$('#btnRT').onclick=function(){$('#rtOut').innerHTML='🚨 <strong>Consejo:</strong> '+RT[Math.floor(Math.random()*RT.length)];};
+
+/* KPIs */
+var kpis=[
+{n:'TSR',s:'La nota del accionista: subida de la acción más dividendos.',f:'([Precio actual + dividendos]/precio inicial)^(1/rondas). Criterio de victoria.',v:'Creciente',a:'Plano',r:'Negativo'},
+{n:'Precio de acción (DCF)',s:'Lo que el mercado cree que ganarás mañana.',f:'Capitalización/Nº acciones; capitalización = EV − deuda + efectivo excedente; EV = DCF ponderado + múltiplos.',v:'Sube con consistencia',a:'Estancado',r:'Cae'},
+{n:'EBITDA',s:'Ganancia antes del desgaste de activos.',f:'Antes de depreciación; analizar con EBIT para detectar sobre-inversión.',v:'Alto con EBIT sano',a:'Crece sin EBIT',r:'Negativo'},
+{n:'EBIT / capital empleado',s:'Eficiencia real de tu operación.',f:'Quien tiene mayor EBIT relativo al capital suele ganar, sin comprometer flujos futuros.',v:'Alto',a:'Medio',r:'Bajo'},
+{n:'Capacidad empleada',s:'Qué tan usadas están tus plantas.',f:'~80% óptimo; baja → costos fijos desperdiciados; saturada → outsourcing +35%.',v:'&gt;80%',a:'60–80%',r:'&lt;60% o saturada'},
+{n:'Stock-out / Inventario',s:'Ventas perdidas o dinero dormido en bodega.',f:'Stock-out regala cuota; inventario inmoviliza capital de trabajo.',v:'Cero/cero',a:'Leve',r:'Severo'},
+{n:'WACC / riesgo',s:'Qué tan caro te cuesta el dinero según tu riesgo.',f:'Riesgo país + crediticio + específico; flujos estables → menor WACC → mayor EV.',v:'Estable',a:'Volátil',r:'Muy volátil'},
+{n:'Caja vs crédito emergencia',s:'Tu oxígeno: que nunca se active el préstamo caro.',f:'Crédito automático 13–15% con gastos urgentes: destruir de TSR.',v:'Caja positiva',a:'Ajustada',r:'Crédito activado'}];
+function renderKPIs(){$('#kpiGrid').innerHTML=kpis.map(function(k){var prim=modo==='exp'?k.s:k.f,sec=modo==='exp'?k.f:k.s;return '<div class="tar" style="margin:0"><h3>📊 '+k.n+'</h3><p>'+prim+'</p><details><summary>'+(modo==='exp'?'Ver versión financiera 🔵':'Ver versión creativa 🟢')+'</summary><p>'+sec+'</p></details><table><tr><th>🟢</th><th>🟡</th><th>🔴</th></tr><tr><td>'+k.v+'</td><td>'+k.a+'</td><td>'+k.r+'</td></tr></table></div>';}).join('');}
+
+/* GLOSARIO */
+var glos=[
+{t:'TSR',c:'Valor',s:'Lo que gana el accionista: acción + dividendos.',f:'Retorno total acumulado; criterio de victoria.'},
+{t:'DCF',c:'Valor',s:'Tu valor = el dinero futuro traído a hoy.',f:'Descuenta FCFF históricos ponderados a WACC; domina el EV.'},
+{t:'WACC',c:'Valor',s:'Qué tan caro es el dinero según tu riesgo.',f:'Incorpora riesgo país, crediticio y específico.'},
+{t:'Múltiplos',c:'Valor',s:'Compararte con empresas parecidas.',f:'EV/SALES, EV/EBITDA, EV/EBIT, EV/NOPLAT; ajustados por transfer pricing.'},
+{t:'Buyback',c:'Valor',s:'Comprar tus acciones cuando están baratas.',f:'Requiere ganancias acumuladas; sube valor por acción.'},
+{t:'Nicho premium',c:'Estrategia',s:'Vender caro a fans que valoran innovación.',f:'Precios altos que cubren costos iniciales; respaldado por características y campaña.'},
+{t:'Estrategia de volumen',c:'Estrategia',s:'Vender mucho y barato aprendiendo a producir.',f:'Economías de escala + curva de aprendizaje.'},
+{t:'Elasticidad-precio',c:'Estrategia',s:'Qué tanto huyen tus clientes si subes el precio.',f:'Menor en mercados sofisticados/corporativos; alta en guerras de precio.'},
+{t:'Margen de contribución',c:'Estrategia',s:'Lo que deja cada unidad tras su costo variable.',f:'Base de la regla de publicidad 10–30%.'},
+{t:'Multiplicador de demanda',c:'Estrategia',s:'El “empujón” que da tener la característica que todos quieren.',f:'&gt;1.0 con licencia/características competitivas.'},
+{t:'Stock-out',c:'Operaciones',s:'Clientes que quieren comprar y no encuentran: se van al rival.',f:'Ventas perdidas por capacidad insuficiente; regala cuota.'},
+{t:'Inventario ocioso',c:'Operaciones',s:'Consolas juntando polvo en bodega.',f:'Capital de trabajo inmovilizado; costo de financiamiento.'},
+{t:'Outsourcing',c:'Operaciones',s:'Que otro fabrique por ti cuando te saturas.',f:'Penalización +35% costo unitario; sin aprendizaje.'},
+{t:'Capacidad empleada',c:'Operaciones',s:'Qué tan usada está tu fábrica.',f:'~80% óptimo desde costos variables.'},
+{t:'Curva de aprendizaje',c:'Operaciones',s:'Cuanto más produces, mejor y más barato.',f:'Reduce costo unitario y defectos; no aplica a fabricación contratada.'},
+{t:'Licencia',c:'I+D',s:'Comprar la tecnología ya lista: estrenas ya.',f:'Pago único, disponible inmediatamente; no construye capacidad propia.'},
+{t:'I+D propio',c:'I+D',s:'Desarrollar en casa: tarda, pero queda en casa.',f:'Retraso de 1 período; gasto inmediato en P&G.'},
+{t:'Crédito de emergencia',c:'Finanzas',s:'El préstamo carísimo que llega si no planeas tu caja.',f:'Automático, 13–15%, con gastos urgentes; destruye TSR.'},
+{t:'Transfer pricing',c:'Finanzas',s:'Precio interno entre tus propias filiales.',f:'Multiplicador 1.0–2.0; efecto global solo vía impuestos.'},
+{t:'EBITDA',c:'Finanzas',s:'Ganancia antes del desgaste.',f:'Analizar junto a EBIT para detectar sobre-inversión.'},
+{t:'EBIT',c:'Finanzas',s:'Eficiencia operativa real.',f:'EBITDA − depreciación; alto relativo al capital = ganador típico.'},
+{t:'ROCE',c:'Finanzas',s:'Cuánto rinde cada dólar invertido.',f:'EBIT / capital empleado.'},
+{t:'Ciclo de Kolb',c:'Aprendizaje',s:'Aprender haciendo y reflexionando en 4 pasos.',f:'Experiencia → observación → conceptualización → experimentación.'},
+{t:'Red Team',c:'Aprendizaje',s:'El “abogado del diablo” que pone a prueba tu estrategia.',f:'Confrontación docente tipo Consejo de Administración.'},
+{t:'CMO',c:'Aprendizaje',s:'El dueño del precio, la audiencia y la campaña.',f:'Director de Marketing: preferencias por región, elasticidad, demanda estimada.'},
+{t:'COO',c:'Aprendizaje',s:'El dueño de fábricas, fletes y entregas a tiempo.',f:'Director de Operaciones: capacidad &gt;80%, logística EE.UU.–Asia, stock-out/inventario.'},
+{t:'CFO',c:'Aprendizaje',s:'El dueño de la caja, la deuda y el valor al accionista.',f:'Director Financiero: WACC, buybacks, tesorería, TSR.'},
+{t:'ESG',c:'Aprendizaje',s:'Ser sostenible también vende consolas.',f:'Decisiones ambientales/sociales/gobernanza que afectan reputación y costo de deuda.'}];
+function renderGlosario(){var cats=['Todas'];glos.forEach(function(g){if(cats.indexOf(g.c)<0)cats.push(g.c);});var sel=$('#gCat').value||'Todas';$('#gCat').innerHTML=cats.map(function(c){return '<option '+(c===sel?'selected':'')+'>'+c+'</option>';}).join('');var q=($('#gBuscar').value||'').toLowerCase();var lista=glos.filter(function(g){return (sel==='Todas'||g.c===sel)&&(g.t.toLowerCase().indexOf(q)>-1||g.s.toLowerCase().indexOf(q)>-1||g.f.toLowerCase().indexOf(q)>-1);});$('#glosarioGrid').innerHTML=lista.length?lista.map(function(g){var prim=modo==='exp'?g.s:g.f,sec=modo==='exp'?g.f:g.s;return '<div class="tar" style="margin:0"><span class="badge">'+g.c+'</span><h3>'+g.t+'</h3><p>'+prim+'</p><details><summary>'+(modo==='exp'?'Ver versión financiera 🔵':'Ver versión creativa 🟢')+'</summary><p>'+sec+'</p></details></div>';}).join(''):'<div class="tar">Sin resultados.</div>';}
+
+/* QUIZ */
+var quiz=[
+{q:'En LANCE, la Tech 2 se interpreta mejor como…',o:['Un modem genérico','El lanzamiento de una consola o dispositivo de streaming','Un servicio de mantenimiento'],c:1,e:'El lente de entretenimiento convierte la simulación en tu industria.'},
+{q:'Criterio principal de victoria:',o:['Ventas de la última ronda','TSR (valor al accionista)','Número de fábricas'],c:1,e:'TSR = ganancia de capital + dividendos; el precio refleja el futuro (DCF).'},
+{q:'Regla de oro de publicidad:',o:['5% de las ventas','10–30% del margen de contribución','Todo lo que sobre'],c:1,e:'Presupuesto = margen × elasticidad (0.1–0.3).'},
+{q:'Capacidad propia saturada → produces extra con…',o:['Aprendizaje gratis','Outsourcing con +35% de costo','Magia'],c:1,e:'Salvavidas caro que erosiona márgenes.'},
+{q:'Si la tesorería falla, se activa…',o:['Crédito de emergencia 13–15%','Un buyback','Una licencia gratis'],c:0,e:'Destruye TSR: planifica la caja antes de invertir.'},
+{q:'¿Quién fija precios y dimensiona demanda?',o:['COO','CMO','CFO'],c:1,e:'CMO: elasticidad, preferencias por región y campaña.'},
+{q:'¿Quién vigila capacidad &gt;80% y fletes EE.UU.–Asia?',o:['CMO','COO','CEO'],c:1,e:'COO: operaciones, logística y stock-out/inventario.'},
+{q:'¿Quién gestiona WACC, deuda y buybacks?',o:['CFO','CMO','COO'],c:0,e:'CFO: estructura de capital y TSR.'},
+{q:'El DCF premia…',o:['Recortar I+D y publicidad','Invertir en crecimiento futuro','La volatilidad'],c:1,e:'Marketing e I+D mejoran la proyección de flujos.'},
+{q:'Licencia vs I+D propia: la licencia…',o:['Tarda 1 ronda','Está disponible inmediatamente con pago único','Es gratis'],c:1,e:'Velocidad hoy; I+D construye capacidad futura.'},
+{q:'Segundo paso del ciclo de Kolb:',o:['Experimentación activa','Observación reflexiva','Experiencia concreta'],c:1,e:'Diagnosticar antes de correr a la siguiente ronda.'},
+{q:'Gana el juego…',o:['El golpe de suerte final','La consistencia en todas las rondas','El precio más bajo siempre'],c:1,e:'El DCF pondera el historial completo.'}];
+var qIdx=0,qScore=0,qLock=false;
+function renderQuiz(){if(qIdx>=quiz.length){var p=Math.round(qScore/quiz.length*100);var msg=p>=80?'🏅 ¡Nivel Director de Entretenimiento!':p>=60?'💪 Sólido; refuerza módulos.':p>=40?'📚 Vas creciendo; repasa la ruta.':'🌱 Recorre los módulos con calma.';$('#quizCaja').innerHTML='<h3>'+qScore+' / '+quiz.length+' ('+p+'%)</h3><p>'+msg+'</p><button class="btn" id="btnRe">🔄 Reintentar</button>';$('#btnRe').onclick=function(){qIdx=0;qScore=0;renderQuiz();};return;}qLock=false;var it=quiz[qIdx];$('#quizCaja').innerHTML='<p class="etiq">Pregunta '+(qIdx+1)+' de '+quiz.length+' · Puntaje: '+qScore+'</p><h3>'+it.q+'</h3>'+it.o.map(function(op,i){return '<button class="opcion" data-i="'+i+'">'+op+'</button>';}).join('')+'<div id="qF"></div>';
+document.querySelectorAll('.opcion').forEach(function(b){b.onclick=function(){if(qLock)return;qLock=true;var i=+b.dataset.i;document.querySelectorAll('.opcion').forEach(function(x,j){if(j===it.c)x.classList.add('correcta');if(j===i&&i!==it.c)x.classList.add('incorrecta');x.disabled=true;});if(i===it.c)qScore++;$('#qF').innerHTML='<div class="'+(i===it.c?'exito':'aviso')+'">'+(i===it.c?'✅ ':'⚠️ ')+it.e+'</div><button class="btn" id="btnNx">Siguiente →</button>';$('#btnNx').onclick=function(){qIdx++;renderQuiz();};};});}
+
+/* CHECKLIST */
+var checks=['CMO: precio coherente con estrategia (nicho $280 respaldado o volumen competitivo)','CMO: publicidad dentro de 10–30% del margen; campaña de lanzamiento si hay nueva tech','CMO: demanda estimada por mercado documentada y entregada al COO','COO: producción cubre demanda sin stock-out severo','COO: capacidad empleada &gt;80% y outsourcing solo como salvavidas','COO: tech nueva en EE.UU.; madura en Asia; logística Europa optimizada','CFO: tesorería proyectada cubre I+D+marketing sin crédito de emergencia','CFO: ratio deuda/patrimonio revisado (efecto WACC)','CFO: buybacks solo con ganancias acumuladas','Comité: estrategia declarada y coherente entre áreas','Comité: leímos el mensaje/escenario de la ronda y movimientos de competidores','Comité: registramos el ciclo de Kolb de la ronda anterior'];
+function renderCheck(){var d=leer('lance_check',[]);$('#listaCheck').innerHTML=checks.map(function(c,i){return '<div class="check-item"><input type="checkbox" data-i="'+i+'" '+(d.indexOf(i)>-1?'checked':'')+'><span>'+c+'</span></div>';}).join('');
+document.querySelectorAll('#listaCheck input').forEach(function(x){x.onchange=function(){var i=+x.dataset.i;var d=leer('lance_check',[]);d=d.indexOf(i)>-1?d.filter(function(y){return y!==i;}):d.concat(i);guardar('lance_check',d);renderCheck();};});
+var p=Math.round(d.length/checks.length*100);$('#barraCheck').style.width=p+'%';$('#txtCheck').textContent=d.length===checks.length?'✅ Comité listo para confirmar la ronda.':'Completado: '+p+'%';}
+
+setMode(modo);calcSim();renderKolb();renderQuiz();renderCheck();
+</script>
+</body>
+</html>
